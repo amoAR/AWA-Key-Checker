@@ -14,16 +14,16 @@ or literally any monkey that exist :smiley:
 <table>
     <thead>
         <th>
-            <br>
+            <p>
             <center>
                 Dark mode
             </center>
-            <br>
+            </p>
         </th>
         <th>
-            <br>
+            <p>
             <center>Light mode</center>
-            <br>
+            </p>
         </th>
     </thead>
     <tbody>
