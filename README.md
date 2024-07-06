@@ -5,7 +5,7 @@ It will work when you are on an an Alienware Arena giveaway page.
 
 ## How to use
 1. _Install_ a userscript manager extension like [Tampermonkey](https://chromewebstore.google.com/detail/nbhcbdghjpllgmfilhnhkllmkecfmpld) / [Violentmonkey](https://chromewebstore.google.com/detail/violentmonkey/jinjaccalgkegednnccohejagnlnfdag) or [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey)\
-or literally any monkey that exist :)
+or literally any monkey that exist :smiley:
 2. _Open_ <a href="https://github.com/amoAR/AWA-Key-Checker/blob/main/AWACheck.user.js" target="_blank">This</a> link & install! :tada:
 3. _Take a look_ at [Alienware](https://eu.alienwarearena.com/ucf/Giveaway) :sunglasses:
 
