@@ -1,12 +1,13 @@
 # AWA Key Checker
-Script that you can paste in your browser console to tell you the current amount of keys, level requirements and restrictions for Alienware giveaways. Give it a look to see some information on offers, and to see if keys are available in your region.
+This userscript tell you the current amount of keys, level/tier requirements and restrictions for Alienware Arena giveaways. Give it a look to see more information about GAs, and to see if keys are available in your region.
 
-Paste the total contents of the awa_key_checker.js file into your browser console (F12 or Ctrl + Shift + J) when you are on an Alienware Arena giveaway page.
+It will work when you are on an an Alienware Arena giveaway page.
 
 ## How to use
 1. _Install_ a userscript manager extension like [Tampermonkey](https://chromewebstore.google.com/detail/nbhcbdghjpllgmfilhnhkllmkecfmpld) / [Violentmonkey](https://chromewebstore.google.com/detail/violentmonkey/jinjaccalgkegednnccohejagnlnfdag) or [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey)\
 or literally any monkey that exist :)
-2. _Open_ <a href="https://github.com/amoAR/Nord-Google-V2/raw/main/Nord_Google.user.js" target="_blank">This</a> link & install! :tada:
+2. _Open_ <a href="https://github.com/amoAR/AWA-Key-Checker/blob/main/AWACheck.user.js" target="_blank">This</a> link & install! :tada:
+3. Take a look at [Alienware](https://eu.alienwarearena.com/ucf/Giveaway) :sunglasses:
 
 ## Screenshots
 
