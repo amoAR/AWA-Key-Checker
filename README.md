@@ -15,14 +15,12 @@ or literally any monkey that exist :smiley:
     <thead>
         <th>
             <p>
-            <center>
-                Dark mode
-            </center>
+            <center>🌒 Dark mode</center>
             </p>
         </th>
         <th>
             <p>
-            <center>Light mode</center>
+            <center>🔆 Light mode</center>
             </p>
         </th>
     </thead>
