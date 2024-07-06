@@ -50,7 +50,7 @@ or literally any monkey that exist :smiley:
         <tr>
             <td colspan=2>
                 <p><pre align="center">No keys!</pre></p>
-                <img width="100%" alt="widgets" src="Screenshots/No keys.png">
+                <img width="100%" alt="widgets" src="Screenshots/nokeys.png">
             </td>
         </tr>
     </tbody>

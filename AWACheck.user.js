@@ -1186,6 +1186,10 @@ function Check() {
       padding: 5px 0;
     }
 
+    .js-widget-check > div:has(img) {
+      text-align: center;
+    }
+
     .js-widget-check > div img {
       margin-left: 1.5rem;
       pointer-events: none;
@@ -1195,7 +1199,7 @@ function Check() {
       border: 0 !important;
       padding-bottom: 1.5px;
       margin-bottom: 1.5rem;
-      background: violet;
+      background: hsla(0, 0%, 66%, 0.33);
     }
   `;
   // More styles for RGB effect
@@ -1238,7 +1242,6 @@ function Check() {
           margin: 1.5%;
         }
       }
-      
 
       .js-widget-check > div > h5.success {
         background: green;
@@ -1251,6 +1254,10 @@ function Check() {
         color: deeppink;
         background-clip: text;
         filter: grayscale(0.8) brightness(1.2) saturate(0.8) contrast(0.9) invert(0.8);
+      }
+
+      .js-widget-check > div hr {
+        background: violet !important;
       }
     `
   }
