@@ -3,21 +3,59 @@
 // @description     Show available key amount, tier requirement and restrictions to certain countries.
 // @namespace       https://github.com/amoAR
 // @match           https://*.alienwarearena.com/ucf*
-// @grant           none
 // @version         1.5
 // @author          amoAR
 // @icon            https://media.alienwarearena.com/images/favicons/favicon-32x32.png
 // @updateURL       https://github.com/amoAR/AWA-Key-Checker/raw/main/AWACheck.user.js
 // @downloadURL     https://github.com/amoAR/AWA-Key-Checker/raw/main/AWACheck.user.js
+// @require         https://openuserjs.org/src/libs/sizzle/GM_config.js
+// @grant           GM_getValue
+// @grant           GM_setValue
+// @grant           GM_registerMenuCommand
 // @license         MIT
 // ==/UserScript==
 
+// Initialize the configuration
+function init_gm_config() {
+  GM_registerMenuCommand('Settings', () => {
+    GM_config.open();
+  });
+  let frame = document.createElement('div');
+  document.body.appendChild(frame);
+  GM_config.init(
+    {
+      'id': 'configuration',
+      'title': 'AWAKeyChecker Configs',
+      'fields':
+      {
+        'rgb_enabled':
+        {
+          'label': 'Enable RGB effects',
+          'type': 'checkbox',
+          'default': false
+        }
+      },
+      'events': {
+        // 'init': () => { GM_config.set("rgb_enabled", get_prepared_items_to_hide()) },
+        'save': () => { location.reload() }
+      },
+      'frame': frame,
+      'css': '#configuration {height:auto !important; width:auto !important; padding:20px !important;max-height: 600px !important;max-width:500px !important; border: 3px solid #fff !important; background-color: hsla(0,0%,98%,1); color:#fff} #configuration .config_header {font-size:17pt; font-weight:bold} #configuration .config_var {margin-top:10px; display: flex;} #configuration_buttons_holder {text-align: center;} #configuration #configuration_resetLink {color:#fff;} .config_var input[type="checkbox"] {order:-1; margin: 0 10px 0 0} #configuration #configuration_items_to_hide_var {display : block;} #configuration_field_items_to_hide {height: 150px; width: 100%; resize: none;background-color: hsla(0,0%,98%,1); color:#fff}'
+    });
+}
+
+function insert_gm_config_button() {
+  let button = "<a id='gm_config_button' class='md-stroked md-button'>AWA Key Checker configs</a>";
+  document.querySelector("#gm_config_button").addEventListener("click", () => GM_config.open());
+}
+
 // XHR checker
-(function() {
+(function () {
   var origOpen = XMLHttpRequest.prototype.open;
 
-  XMLHttpRequest.prototype.open = function(method, url) {
+  XMLHttpRequest.prototype.open = function (method, url) {
     this.addEventListener("load", function () {
+      init_gm_config();
       document.onreadystatechange = () => {
         if (document.readyState === "complete") {
           Check();
@@ -25,7 +63,7 @@
       }
     });
 
-    this.addEventListener("error", function() {
+    this.addEventListener("error", function () {
       console.log("XHR errored out", method, url);
     });
 
@@ -1116,48 +1154,106 @@ function Check() {
       margin-bottom: 2rem;
     }
 
-    .js-widget-check h5.success {
+    .js-widget-check > div h5.success {
       color: green;
       font-weight: bold;
       font-size: 1.15rem;
     }
 
-    .js-widget-check h5.danger {
+    .js-widget-check > div h5.danger {
       color: indianred;
       font-weight: bold;
       font-size: 1.15rem;
     }
 
-    .js-widget-check h5.warning {
+    .js-widget-check > div h5.warning {
       color: goldenrod;
       font-weight: bold;
       font-size: 1.15rem;
     }
 
-    .js-widget-check p {
+    .js-widget-check > div p {
       padding-top: 5px;
       color: #363636;
     }
 
-    .js-widget-check ul {
+    .js-widget-check > div ul {
       color: #363636;
     }
 
-    .js-widget-check li {
+    .js-widget-check > div li {
       border: none !important;
       padding: 5px 0;
     }
 
-    .js-widget-check img {
+    .js-widget-check > div img {
       margin-left: 1.5rem;
       pointer-events: none;
     }
 
-    .js-widget-check hr {
-      border-color: hsla(0,0%,66%,0.33);
-      padding-bottom: 1rem;
+    .js-widget-check > div hr {
+      border: 0 !important;
+      padding-bottom: 1.5px;
+      margin-bottom: 1.5rem;
+      background: violet;
     }
   `;
+  // More styles for RGB effect
+  if (GM_config.get("rgb_enabled")) {
+    style.innerText += `
+      @keyframes animate {
+      100% {
+          filter: hue-rotate(360deg);
+        }
+      }
+
+      .js-widget-check {
+        display: flex;
+        align-content: center;
+        background:linear-gradient(135deg, rgba(20, 255, 233, .7), rgba(255, 235, 59, .7), rgba(255, 0, 224, .6), rgba(0, 255, 255, 1));
+        border-radius: 10px;
+        animation: animate 2.3s linear infinite;
+      }
+
+      /* Dark mode */
+      @media (prefers-color-scheme: dark) {
+        .js-widget-check > div {
+          width: 100%;
+          background: rgba(44, 44, 44, .7);
+          backdrop-filter: blur(50px);
+          border-radius: 6px;
+          padding: 5%;
+          margin: 1.5%;
+        }
+      }
+
+      /* Light mode */
+      @media (prefers-color-scheme: light) {
+        .js-widget-check > div {
+          width: 100%;
+          background: rgba(250, 250, 250, .7);
+          backdrop-filter: blur(50px);
+          border-radius: 6px;
+          padding: 5%;
+          margin: 1.5%;
+        }
+      }
+      
+
+      .js-widget-check > div > h5.success {
+        background: green;
+        background-clip: text;
+        filter: grayscale(0.5) saturate(0.9) sepia(0.4) brightness(1.4) contrast(1.2);
+      }
+
+      .js-widget-check > div > h5.danger {
+        background: deeppink;
+        color: deeppink;
+        background-clip: text;
+        filter: grayscale(0.8) brightness(1.2) saturate(0.8) contrast(0.9) invert(0.8);
+      }
+    `
+  }
   document.head.append(style);
 
   // Create div
@@ -1165,6 +1261,7 @@ function Check() {
   // div innerHtml
   checkerWidgetHtml = `
     <div class="js-widget-check">
+    <div>
   `;
 
   // Availability
@@ -1213,7 +1310,7 @@ function Check() {
     `;
   }
 
-  checkerWidget.innerHTML = checkerWidgetHtml + `<hr></div><br>`;
+  checkerWidget.innerHTML = checkerWidgetHtml + `<hr></div></div><br>`;
 
   // Append the div
   rightPanel.insertAdjacentHTML("beforebegin", checkerWidgetHtml);

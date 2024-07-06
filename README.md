@@ -12,20 +12,42 @@ or literally any monkey that exist :smiley:
 ## Screenshots
 
 <table>
+    <thead>
+        <th>
+            &nbsp;
+            <center>Dark mode</center>
+            &nbsp;
+        </th>
+        <th>
+            &nbsp;
+            <center>Light mode</center>
+            &nbsp;
+        </th>
+    </thead>
     <tbody>
         <tr>
-            <td rowspan=2>
-                <p align="center">Dark mode</p>
+            <td>
+                <p>Default:</p>
                 <img width="100%" alt="widgets" src="Screenshots/dark.png">
             </td>
             <td>
-                <p align="center">Light mode</p>
+                <p>Default:</p>
                 <img width="100%" alt="widgets" src="Screenshots/light.png">
             </td>
         </tr>
         <tr>
             <td>
-                <p align="center">No keys!</p>
+                <p>RGB:</p>
+                <img width="100%" alt="widgets" src="Screenshots/darkrgb.png">
+            </td>
+            <td>
+                <p>RGB:</p>
+                <img width="100%" alt="widgets" src="Screenshots/lightrgb.png">
+            </td>
+        </tr>
+        <tr>
+            <td colspan=2>
+                <p><pre align="center">No keys!</pre></p>
                 <img width="100%" alt="widgets" src="Screenshots/No keys.png">
             </td>
         </tr>
@@ -34,8 +56,5 @@ or literally any monkey that exist :smiley:
 
 ## License
 
-> Checking key availability is based on [Saulios](https://github.com/Saulios/awa_key_checker) project.
-
-<p align="center">
-    &copy; 2024 <a href="https://github.com/amoAR">amoAR</a> | Licensed under the <a href="https://github.com/amoAR/AWA_Key_Checker/blob/main/LICENSE">MIT license</a>.
-</p>
+> Checking key availability is based on [Saulios](https://github.com/Saulios/awa_key_checker) project.\
+&copy; 2024 <a href="https://github.com/amoAR">amoAR</a> | Licensed under the <a href="https://github.com/amoAR/AWA_Key_Checker/blob/main/LICENSE">MIT license</a>.
