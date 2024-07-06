@@ -1,7 +1,7 @@
 # AWA Key Checker
 This userscript tell you the current amount of keys, level/tier requirements and restrictions for Alienware Arena giveaways. Give it a look to see more information about GAs, and to see if keys are available in your region.
 
-It will work when you are on an an Alienware Arena giveaway page.
+It will work when you are on an an Alienware Arena giveaway page. Also you can enable RGB feature in settings!
 
 ## How to use
 1. _Install_ a userscript manager extension like [Tampermonkey](https://chromewebstore.google.com/detail/nbhcbdghjpllgmfilhnhkllmkecfmpld) / [Violentmonkey](https://chromewebstore.google.com/detail/violentmonkey/jinjaccalgkegednnccohejagnlnfdag) or [Greasemonkey](https://addons.mozilla.org/en-US/firefox/addon/greasemonkey)\
@@ -14,14 +14,16 @@ or literally any monkey that exist :smiley:
 <table>
     <thead>
         <th>
-            &nbsp;
-            <center>Dark mode</center>
-            &nbsp;
+            <br>
+            <center>
+                Dark mode
+            </center>
+            <br>
         </th>
         <th>
-            &nbsp;
+            <br>
             <center>Light mode</center>
-            &nbsp;
+            <br>
         </th>
     </thead>
     <tbody>
