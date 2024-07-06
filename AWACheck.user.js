@@ -7,8 +7,8 @@
 // @version         1.5
 // @author          amoAR
 // @icon            https://media.alienwarearena.com/images/favicons/favicon-32x32.png
-// @updateURL       https://github.com/amoAR
-// @downloadURL     https://github.com/amoAR
+// @updateURL       https://github.com/amoAR/AWA-Key-Checker/raw/main/AWACheck.user.js
+// @downloadURL     https://github.com/amoAR/AWA-Key-Checker/raw/main/AWACheck.user.js
 // @license         MIT
 // ==/UserScript==
 
