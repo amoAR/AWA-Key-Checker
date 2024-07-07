@@ -57,4 +57,4 @@ or literally any monkey that exist :smiley:
 ## License
 
 > Checking key availability is based on [Saulios](https://github.com/Saulios/awa_key_checker) project.\
-&copy; 2024 <a href="https://github.com/amoAR">amoAR</a> | Licensed under the <a href="https://github.com/amoAR/AWA_Key_Checker/blob/main/LICENSE">MIT license</a>.
+&copy; 2024 <a href="https://github.com/amoAR">amoAR</a> | Licensed under the <a href="https://github.com/amoAR/AWA_Key_Checker/blob/main/LICENSE">GPL-3.0</a> license.
