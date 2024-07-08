@@ -1202,13 +1202,18 @@ function Check() {
       background: hsla(0, 0%, 66%, 0.33);
     }
   `;
-  // More styles for RGB effect
+
+  // More styles for RGB effects
   if (GM_config.get("rgb_enabled")) {
     style.innerText += `
       @keyframes animate {
-      100% {
+        100% {
           filter: hue-rotate(360deg);
         }
+      }
+
+      .js-widget-check * {
+        user-select: none;
       }
 
       .js-widget-check {
@@ -1219,28 +1224,13 @@ function Check() {
         animation: animate 2.3s linear infinite;
       }
 
-      /* Dark mode */
-      @media (prefers-color-scheme: dark) {
-        .js-widget-check > div {
-          width: 100%;
-          background: rgba(44, 44, 44, .7);
-          backdrop-filter: blur(50px);
-          border-radius: 6px;
-          padding: 5%;
-          margin: 1.5%;
-        }
-      }
-
-      /* Light mode */
-      @media (prefers-color-scheme: light) {
-        .js-widget-check > div {
-          width: 100%;
-          background: rgba(250, 250, 250, .7);
-          backdrop-filter: blur(50px);
-          border-radius: 6px;
-          padding: 5%;
-          margin: 1.5%;
-        }
+      .js-widget-check > div {
+        width: 100%;
+        background: rgba(250, 250, 250, .7);
+        backdrop-filter: blur(50px);
+        border-radius: 6px;
+        padding: 5%;
+        margin: 1.5%;
       }
 
       .js-widget-check > div > h5.success {
@@ -1258,13 +1248,16 @@ function Check() {
 
       .js-widget-check > div hr {
         background: violet !important;
+        box-shadow: 0px 0px 10px 5px rgba(1, 100, 172, .1);
       }
     `
   }
+  style.innerText = style.innerText.replace(/&lt;br&gt;/g, '').replace(/\s\s+/g, ' ').trim();
   document.head.append(style);
 
   // Create div
   checkerWidget = document.createElement("div");
+  
   // div innerHtml
   checkerWidgetHtml = `
     <div class="js-widget-check">
