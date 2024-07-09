@@ -3,7 +3,7 @@
 // @description     Show available key amount, tier requirement and restrictions to certain countries.
 // @namespace       https://github.com/amoAR
 // @match           https://*.alienwarearena.com/ucf*
-// @version         1.5
+// @version         1.6
 // @author          amoAR
 // @icon            https://media.alienwarearena.com/images/favicons/favicon-32x32.png
 // @updateURL       https://github.com/amoAR/AWA-Key-Checker/raw/main/AWACheck.user.js
@@ -12,7 +12,8 @@
 // @grant           GM_getValue
 // @grant           GM_setValue
 // @grant           GM_registerMenuCommand
-// @license         MIT
+// @license         GPL-3.0
+// @compatible      Firefox
 // ==/UserScript==
 
 // Initialize the configuration
