@@ -13,6 +13,7 @@
 // @grant           GM_setValue
 // @grant           GM_registerMenuCommand
 // @license         GPL-3.0
+// @compatible      Firefox
 // ==/UserScript==
 
 // Initialize the configuration
