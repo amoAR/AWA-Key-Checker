@@ -1161,6 +1161,12 @@ function Check() {
       font-size: 1.15rem;
     }
 
+    .js-widget-check > div h5.notdanger {
+      color: green;
+      font-weight: bold;
+      font-size: 1.15rem;
+    }
+    
     .js-widget-check > div h5.danger {
       color: indianred;
       font-weight: bold;
@@ -1266,9 +1272,19 @@ function Check() {
   `;
 
   // Availability
+  var cutoff = 10;
   if (country_with_keys.length !== 0) {
     checkerWidgetHtml += '<h5 class="success">Key Availability: 🔑</h5>'
     switch (true) {
+      case country_without_keys.length == 0:
+        checkerWidgetHtml += '<p>&emsp;Every country has keys available!</p>';
+        break;
+      case country_with_keys.length == 1:
+        checkerWidgetHtml += '<p>&emsp;Only 1 country has keys available!</p>';
+        break;
+      case country_with_keys.length < cutoff:
+        checkerWidgetHtml += '<p>&emsp;Only ' + country_with_keys.length + ' countries have keys available!</p>';
+        break;
       case country_with_keys.length == country_without_keys.length:
         checkerWidgetHtml += '<p>&emsp;Some countries have keys available!</p>';
         break;
@@ -1304,11 +1320,19 @@ function Check() {
 
   // Unavailability
   if (country_without_keys.length !== 0 && country_with_keys.length !== 0) {
-    checkerWidgetHtml += `
-      <hr>
-      <h5 class="danger">Countries without keys: 🚫</h5>
-      <p>&emsp;${country_without_keys.toString()}</p>
-    `;
+    if (country_with_keys.length < cutoff) {
+      checkerWidgetHtml += `
+        <hr>
+        <h5 class="notdanger">Countries with keys: ✔️</h5>
+        <p>&emsp;${country_with_keys.toString()}</p>
+      `;
+    } else {
+      checkerWidgetHtml += `
+        <hr>
+        <h5 class="danger">Countries without keys: 🚫</h5>
+        <p>&emsp;${country_without_keys.toString()}</p>
+      `;
+    }
   }
 
   checkerWidget.innerHTML = checkerWidgetHtml + `<hr></div></div><br>`;
