@@ -1246,6 +1246,13 @@ function Check() {
         filter: grayscale(0.5) saturate(0.9) sepia(0.4) brightness(1.4) contrast(1.2);
       }
 
+      .js-widget-check > div > h5.notdanger {
+        background: green;
+        color: green;
+        background-clip: text;
+        filter: grayscale(0.5) saturate(0.9) sepia(0.4) brightness(1.4) contrast(1.2);
+      }
+      
       .js-widget-check > div > h5.danger {
         background: deeppink;
         color: deeppink;
