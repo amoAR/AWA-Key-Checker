@@ -1228,7 +1228,7 @@ function check_keys(rgb_enabled) {
       font-weight: bold;
       font-size: 1.15rem;
     }
-
+    
     .js-widget-check > div h5.danger {
       color: indianred;
       font-weight: bold;
@@ -1237,6 +1237,12 @@ function check_keys(rgb_enabled) {
 
     .js-widget-check > div h5.warning {
       color: goldenrod;
+      font-weight: bold;
+      font-size: 1.15rem;
+    }
+    
+    .js-widget-check > div h5.info {
+      color: darkolivegreen;
       font-weight: bold;
       font-size: 1.15rem;
     }
@@ -1308,6 +1314,11 @@ function check_keys(rgb_enabled) {
         filter: grayscale(0.5) saturate(0.9) sepia(0.4) brightness(1.4) contrast(1.2);
       }
 
+      .js-widget-check > div > h5.info {
+        background-clip: text;
+        filter: saturate(2) sepia(4.5) brightness(1.1) contrast(3.2);
+      }
+      
       .js-widget-check > div > h5.danger {
         background: deeppink;
         color: deeppink;
@@ -1334,9 +1345,20 @@ function check_keys(rgb_enabled) {
   `;
 
   // Availability
+  var cutoff = 6;
+  
   if (country_with_keys.length !== 0) {
     checkerWidgetHtml += '<h5 class="success">Key Availability: 🔑</h5>'
     switch (true) {
+      case country_without_keys.length == 0:
+        checkerWidgetHtml += '<p>&emsp;Every country has keys available!</p>';
+        break;
+      case country_with_keys.length == 1:
+        checkerWidgetHtml += '<p>&emsp;Only <strong>one</strong> country has keys available!</p>';
+        break;
+      case country_with_keys.length <= cutoff:
+        checkerWidgetHtml += '<p>&emsp;Only <strong>' + country_with_keys.length + '</strong> countries have keys available!</p>';
+        break;
       case country_with_keys.length == country_without_keys.length:
         checkerWidgetHtml += '<p>&emsp;Some countries have keys available!</p>';
         break;
@@ -1372,11 +1394,19 @@ function check_keys(rgb_enabled) {
 
   // Unavailability
   if (country_without_keys.length !== 0 && country_with_keys.length !== 0) {
-    checkerWidgetHtml += `
-      <hr>
-      <h5 class="danger">Countries without keys: 🚫</h5>
-      <p>&emsp;${country_without_keys.toString()}</p>
-    `;
+    if (country_with_keys.length <= cutoff) {
+      checkerWidgetHtml += `
+        <hr>
+        <h5 class="info">Countries with keys: ✔️</h5>
+        <p>&emsp;${country_with_keys.toString()}</p>
+      `;
+    } else {
+      checkerWidgetHtml += `
+        <hr>
+        <h5 class="danger">Countries without keys: 🚫</h5>
+        <p>&emsp;${country_without_keys.toString()}</p>
+      `;
+    }
   }
 
   checkerWidget.innerHTML = checkerWidgetHtml + `<hr></div></div><br>`;
@@ -1492,7 +1522,7 @@ const logger = (function () {
       // Reprint only the custom logs
       currentLogs.forEach(log => {
         if (log.type === 'log')
-          console.log('%c' + log.message, 'color:' + logColor || log.color);
+          console.log('%c' + log.message, 'color:' + (logColor || log.color));
           
         else if (log.type === 'group')
           console.group('%c' + log.name, 'color:' + logHeaderColor);
