@@ -1,78 +1,147 @@
 // ==UserScript==
 // @name            AWA Giveaway Key Checker
 // @description     Show available key amount, tier requirement and restrictions to certain countries.
-// @namespace       https://github.com/amoAR
-// @match           https://*.alienwarearena.com/ucf*
-// @version         1.5
+// @namespace       AWAKeyChecker
+// @version         2.0
 // @author          amoAR
+// @license         GPL-3.0 (https://github.com/amoAR/AWA-Key-Checker/raw/main/LICENSE)
 // @icon            https://media.alienwarearena.com/images/favicons/favicon-32x32.png
+// @homepageURL     https://github.com/amoAR/AWA-Key-Checker
+// @supportURL      https://github.com/amoAR/AWA-Key-Checker/issues
 // @updateURL       https://github.com/amoAR/AWA-Key-Checker/raw/main/AWACheck.user.js
 // @downloadURL     https://github.com/amoAR/AWA-Key-Checker/raw/main/AWACheck.user.js
+// @match           https://*.alienwarearena.com/ucf*
+// @exclude         https://*.alienwarearena.com/ucf/increment*
 // @require         https://openuserjs.org/src/libs/sizzle/GM_config.js
-// @grant           GM_getValue
-// @grant           GM_setValue
+// @run-at          document-idle
+// @grant           GM.getValue
+// @grant           GM.setValue
 // @grant           GM_registerMenuCommand
-// @license         MIT
+// @compatible      Firefox
 // ==/UserScript==
 
-// Initialize the configuration
-function init_gm_config() {
-  GM_registerMenuCommand('Settings', () => {
-    GM_config.open();
-  });
-  let frame = document.createElement('div');
-  document.body.appendChild(frame);
-  GM_config.init(
-    {
-      'id': 'configuration',
-      'title': 'AWAKeyChecker Configs',
-      'fields':
-      {
-        'rgb_enabled':
-        {
-          'label': 'Enable RGB effects',
-          'type': 'checkbox',
-          'default': false
-        }
-      },
-      'events': {
-        // 'init': () => { GM_config.set("rgb_enabled", get_prepared_items_to_hide()) },
-        'save': () => { location.reload() }
-      },
-      'frame': frame,
-      'css': '#configuration {height:auto !important; width:auto !important; padding:20px !important;max-height: 600px !important;max-width:500px !important; border: 3px solid #fff !important; background-color: hsla(0,0%,98%,1); color:#fff} #configuration .config_header {font-size:17pt; font-weight:bold} #configuration .config_var {margin-top:10px; display: flex;} #configuration_buttons_holder {text-align: center;} #configuration #configuration_resetLink {color:#fff;} .config_var input[type="checkbox"] {order:-1; margin: 0 10px 0 0} #configuration #configuration_items_to_hide_var {display : block;} #configuration_field_items_to_hide {height: 150px; width: 100%; resize: none;background-color: hsla(0,0%,98%,1); color:#fff}'
-    });
-}
+const namespace = "AWAKeyChecker:";
+const timeout = 5;
 
-function insert_gm_config_button() {
-  let button = "<a id='gm_config_button' class='md-stroked md-button'>AWA Key Checker configs</a>";
-  document.querySelector("#gm_config_button").addEventListener("click", () => GM_config.open());
-}
-
-// XHR checker
-(function () {
-  var origOpen = XMLHttpRequest.prototype.open;
-
-  XMLHttpRequest.prototype.open = function (method, url) {
-    this.addEventListener("load", function () {
-      init_gm_config();
-      document.onreadystatechange = () => {
-        if (document.readyState === "complete") {
-          Check();
-        }
-      }
-    });
-
-    this.addEventListener("error", function () {
-      console.log("XHR errored out", method, url);
-    });
-
-    origOpen.apply(this, arguments);
+// configuration callbacks
+function Callbacks() {
+  let hasRun = false;
+  let runables = [];
+  let next = () => runables.shift();
+  let run = function () {
+    hasRun = true;
+    for (let fn = next(); !!fn; fn = next())
+      setTimeout(fn);
   };
-})();
+  run.add = fn => {
+    runables.push(fn);
+    if (hasRun) run();
+  };
+  return run;
+}
+let onInit = new Callbacks();
+
+// Initialize the configuration
+let frame = document.createElement('div');
+document.body.appendChild(frame);
+
+const styles = `
+  #configuration {
+    height: auto !important;
+    width: auto !important;
+    padding: 20px !important;
+    max-height: 600px !important;
+    max-width: 600px !important;
+    border: 3px solid #fff !important;
+    background-color: rgba(56, 61, 81, .95);
+    color: #fff;
+  }
+
+  #configuration .field_label {
+    margin-bottom: 0;
+    font-size: medium;
+  }
+
+  #configuration .config_header {
+    font-size: 17pt;
+    font-weight: bold;
+  }
+
+  #configuration .config_var {
+    margin-top: 10px;
+    display: flex;
+  }
+
+  #configuration_buttons_holder {
+    text-align: center;
+  }
+
+  #configuration #configuration_resetLink {
+    color: #fff;
+  }
+
+  .config_var input[type="checkbox"] {
+    order: -1;
+    margin: 0 10px 0 0;
+    font-size: medium;
+  }
+
+  #configuration #configuration_items_to_hide_var {
+    display: block;
+  }
+
+  #configuration_field_items_to_hide {
+    height: 150px;
+    width: 100%;
+    resize: none;
+    background-color: rgba(56, 61, 81, .95);
+    color: #fff;
+  }
+
+  #configuration_interval_var::before {
+    content: "Waiting interval for loading in ms \\A (Depends on network speed)";
+    text-align: left;
+    white-space: pre;
+    font-size: medium;
+    font-weight: bold;
+  }
+    
+  #configuration_interval_var {
+    text-align: center;
+  }
+`
+const gmc = new GM_config(
+  {
+    'id': 'configuration',
+    'title': 'AWAKeyChecker Configs',
+    'fields':
+    {
+      'rgb_enabled':
+      {
+        'label': 'Enable RGB effects',
+        'type': 'checkbox',
+        'default': false
+      },
+      'interval':
+      {
+        'lable': 'Waiting interval for loading in ms (Depends on network speed)',
+        'type': 'unsigned int',
+        'min': 1000,
+        'max': 5000,
+        'default': 1000
+      }
+    },
+    'events': {
+      'init': onInit,
+      'save': () => { location.reload() }
+    },
+    'frame': frame,
+    'css': styles.replace(/&lt;br&gt;/g, '').replace(/\s\s+/g, ' ').trim()
+  }
+);
 
 // Key checker
-function Check() {
+function check_keys(rgb_enabled) {
   var country_with_keys = [];
   var country_without_keys = [];
   var countries = new function () {
@@ -1204,7 +1273,7 @@ function Check() {
   `;
 
   // More styles for RGB effects
-  if (GM_config.get("rgb_enabled")) {
+  if (rgb_enabled) {
     style.innerText += `
       @keyframes animate {
         100% {
@@ -1257,7 +1326,7 @@ function Check() {
 
   // Create div
   checkerWidget = document.createElement("div");
-  
+
   // div innerHtml
   checkerWidgetHtml = `
     <div class="js-widget-check">
@@ -1315,3 +1384,145 @@ function Check() {
   // Append the div
   rightPanel.insertAdjacentHTML("beforebegin", checkerWidgetHtml);
 }
+
+// Wait for variable
+function wait_for_var(callback, interval = 5000) {
+  let i = 0;
+  logger.clearAllExceptMine();
+  logger.group(`${namespace} Gathering key details`);
+  const checkProperty = setInterval(() => {
+    i++;
+    logger.clearAllExceptMine();
+    logger.log("%s Attempt to get GA's details => %i", namespace, i);
+    if (typeof countryKeys === 'object') {
+      clearInterval(checkProperty);
+      logger.endGroup();
+      callback();
+    }
+    else if (i >= timeout) {
+      clearInterval(checkProperty);
+      logger.endGroup();
+      throw "AWAKeyChacker: Failed to get GA's details";
+    }
+  }, interval);
+}
+
+// Wait for element
+function wait_for_el(selector, callback, interval = 5000) {
+  let i = 0;
+  logger.clearAllExceptMine();
+  logger.group(`${namespace} Gathering required elements`);
+  const checkQuery = setInterval(() => {
+    i++;
+    logger.clearAllExceptMine();
+    logger.log("%s Attempt to find GA's scrollbar => %i", namespace, i);
+    if (document.querySelector(selector)) {
+      clearInterval(checkQuery);
+      logger.endGroup();
+      callback();
+    }
+    else if (i >= timeout) {
+      clearInterval(checkQuery);
+      logger.endGroup();
+      throw "AWAKeyChacker: Failed to get GA's scrollbar";
+    }
+  }, interval);
+}
+
+// Custom logger
+const logger = (function () {
+  let logs = [];
+  let groupStack = []; // Stack to manage groups
+
+  const logColor = 'orange';
+  const logHeaderColor = 'skyblue';
+  const logErrorColor = 'indianred';
+
+  // format the log message
+  function formatMessage(format, ...args) {
+    return format.replace(/%[sdif]/g, (match) => {
+      if (args.length > 0) {
+        return args.shift();
+      } else {
+        return match; // in case of mismatch, return the original match
+      }
+    });
+  }
+
+  return {
+    log: function (format, ...args) {
+      const message = formatMessage(format, ...args);
+
+      let color = logColor; // Default color
+
+      // Change the color for the last try/log
+      if (args.includes(5))
+        color = logErrorColor;
+
+      if (groupStack.length > 0)
+        logs.push({ type: 'log', message, group: groupStack[groupStack.length - 1] });
+      else
+        logs.push({ type: 'log', message });
+
+      console.log('%c' + message, 'color:' + color);
+    },
+
+    group: function (groupName) {
+      groupStack.push(groupName);
+      logs.push({ type: 'group', name: groupName });
+      console.group('%c' + groupName, `color: ${logHeaderColor}; font-weight: bold`);
+    },
+
+    endGroup: function () {
+      if (groupStack.length > 0) {
+        const groupName = groupStack.pop();
+        logs.push({ type: 'endGroup', name: groupName });
+        console.groupEnd();
+      } else {
+        console.warn('No group to end.');
+      }
+      console.log("\n\n");
+    },
+
+    clearAllExceptMine: function () {
+      // Save the current logs
+      const currentLogs = [...logs];
+      // Clear the console
+      console.clear();
+      // Reprint only the custom logs
+      currentLogs.forEach(log => {
+        if (log.type === 'log')
+          console.log('%c' + log.message, 'color:' + logColor || log.color);
+          
+        else if (log.type === 'group')
+          console.group('%c' + log.name, 'color:' + logHeaderColor);
+          
+        else if (log.type === 'endGroup')
+          console.groupEnd();
+      });
+    }
+  };
+})();
+window.logger = logger;
+
+// Run
+async function run() {
+  await onInit.add(() => {
+    GM_registerMenuCommand('Settings', () => {
+      gmc.open();
+    });
+  });
+
+  const interval = gmc.get('interval');
+  try {
+    wait_for_var(() => {
+      wait_for_el('article[class*="top-widget"][class*="instructions"] h1:first-of-type', () => {
+        check_keys(gmc.get('rgb_enabled'));
+      }, interval)
+    }, interval);
+  }
+  catch {
+    throw "AWAKeyChacker: Unknown error";
+  }
+}
+run();
