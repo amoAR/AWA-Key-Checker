@@ -2,7 +2,7 @@
 // @name            AWA Giveaway Key Checker
 // @description     Show available key amount, tier requirement and restrictions to certain countries.
 // @namespace       AWAKeyChecker
-// @version         2.0
+// @version         2.1
 // @author          amoAR
 // @license         GPL-3.0 (https://github.com/amoAR/AWA-Key-Checker/raw/main/LICENSE)
 // @icon            https://media.alienwarearena.com/images/favicons/favicon-32x32.png
@@ -1346,7 +1346,7 @@ function check_keys(rgb_enabled) {
 
   // Availability
   var cutoff = 6;
-  
+
   if (country_with_keys.length !== 0) {
     checkerWidgetHtml += '<h5 class="success">Key Availability: 🔑</h5>'
     switch (true) {
@@ -1523,10 +1523,10 @@ const logger = (function () {
       currentLogs.forEach(log => {
         if (log.type === 'log')
           console.log('%c' + log.message, 'color:' + (logColor || log.color));
-          
+
         else if (log.type === 'group')
           console.group('%c' + log.name, 'color:' + logHeaderColor);
-          
+
         else if (log.type === 'endGroup')
           console.groupEnd();
       });
