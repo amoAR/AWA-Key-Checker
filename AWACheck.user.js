@@ -616,11 +616,11 @@ function check_keys(rgb_enabled) {
       },
       {
         code: "KP",
-        name: "Korea"
+        name: "North Korea"
       },
       {
         code: "KR",
-        name: "Korea"
+        name: "South Korea"
       },
       {
         code: "KW",
