@@ -24,7 +24,23 @@
 
 const namespace = "AWAKeyChecker:";
 const timeout = 5;
-const giveawayHookSelector = '.row.accordion-section > .col';
+const checkerStyleId = 'awa-key-checker-style';
+
+function findGiveawayHook() {
+  const node = document.querySelector('.row.accordion-section > .col')
+    || document.querySelector('.accordion-body.js-widget-steps')
+    || document.querySelector('.giveaway-redemption-steps')
+    || document.querySelector('.giveaway-instructions-title');
+
+  return node ? (node.closest('.col') || node.closest('.accordion-wrapper') || node.parentElement) : null;
+}
+
+function hasCountryKeys(countryData) {
+  if (!countryData || typeof countryData !== 'object') {
+    return false;
+  }
+  return Object.values(countryData).some((value) => Number(value) > 0);
+}
 
 // configuration callbacks
 function Callbacks() {
@@ -147,6 +163,10 @@ const gmc = new GM_config(
 function check_keys(rgb_enabled) {
   const checkerAccordionId = 'accordion-key-checker';
   const checkerCollapseId = 'collapseKeyChecker';
+  if (document.getElementById(checkerAccordionId)) {
+    return;
+  }
+
   var country_with_keys = [];
   var country_without_keys = [];
   var countries = new function () {
@@ -1202,8 +1222,8 @@ function check_keys(rgb_enabled) {
 
   for (var country in countryKeys) {
     var get_country = countries.getEntry(country);
-    var get_country_name = get_country.name;
-    if (countryKeys[country].length === 0) {
+    var get_country_name = get_country ? get_country.name : country;
+    if (!hasCountryKeys(countryKeys[country])) {
       country_without_keys.push(" " + get_country_name);
     } else {
       country_with_keys.push(" " + get_country_name);
@@ -1219,10 +1239,19 @@ function check_keys(rgb_enabled) {
   }
 
   // Instructions article
-  const rightPanel = document.querySelector(giveawayHookSelector);
+  const rightPanel = findGiveawayHook();
+  if (!rightPanel) {
+    throw "AWAKeyChacker: Failed to locate giveaway panel";
+  }
 
   // Inject new CSS
-  const style = document.createElement("style");
+  let style = document.getElementById(checkerStyleId);
+  if (!style) {
+    style = document.createElement("style");
+    style.id = checkerStyleId;
+    document.head.append(style);
+  }
+
   style.innerText = `
     .js-widget-check-accordion {
       margin-bottom: 0.75rem;
@@ -1338,10 +1367,9 @@ function check_keys(rgb_enabled) {
     `
   }
   style.innerText = style.innerText.replace(/&lt;br&gt;/g, '').replace(/\s\s+/g, ' ').trim();
-  document.head.append(style);
 
   // div innerHtml
-  checkerWidgetHtml = `
+  let checkerWidgetHtml = `
     <div class="accordion-wrapper js-widget-check-accordion" id="${checkerAccordionId}">
       <div class="accordion-header">
         <button class="collapsed custom-accordion-btn" type="button" data-bs-toggle="collapse" data-bs-target="#${checkerCollapseId}" aria-expanded="false" aria-controls="${checkerCollapseId}">
@@ -1387,14 +1415,17 @@ function check_keys(rgb_enabled) {
 
   // Quantity and requirements
   for (var country in countryKeys) {
-    if (countryKeys[country].length === 0) {
+    if (!hasCountryKeys(countryKeys[country])) {
       continue;
     }
-    for (var level in countryKeys[country]) {
+    const tierEntries = Object.entries(countryKeys[country]);
+    for (var i = 0; i < tierEntries.length; i++) {
+      const level = tierEntries[i][0];
+      const keyCount = tierEntries[i][1];
       checkerWidgetHtml += `
         <ul>
           <li>&emsp;🔸 Tier: ${level}</li>
-          <li>&emsp;🔸 Keys: ${countryKeys[country][level]}</li>
+          <li>&emsp;🔸 Keys: ${keyCount}</li>
         </ul>
       `;
     }
@@ -1447,15 +1478,19 @@ function wait_for_var(callback, interval = 5000) {
 }
 
 // Wait for element
-function wait_for_el(selector, callback, interval = 5000) {
+function wait_for_el(selectorOrResolver, callback, interval = 5000) {
   let i = 0;
   logger.clearAllExceptMine();
   logger.group(`${namespace} Gathering required elements`);
   const checkQuery = setInterval(() => {
     i++;
     logger.clearAllExceptMine();
-    logger.log("%s Attempt to find GA's scrollbar => %i", namespace, i);
-    if (document.querySelector(selector)) {
+    logger.log("%s Attempt to find giveaway panel => %i", namespace, i);
+    const foundElement = typeof selectorOrResolver === 'function'
+      ? selectorOrResolver()
+      : document.querySelector(selectorOrResolver);
+
+    if (foundElement) {
       clearInterval(checkQuery);
       logger.endGroup();
       callback();
@@ -1556,7 +1591,7 @@ function run() {
 
     try {
       wait_for_var(() => {
-        wait_for_el(giveawayHookSelector, () => {
+        wait_for_el(findGiveawayHook, () => {
           check_keys(rgbEnabled);
         }, interval)
       }, interval);
