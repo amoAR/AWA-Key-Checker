@@ -18,10 +18,29 @@
 // @grant           GM.setValue
 // @grant           GM_registerMenuCommand
 // @compatible      Firefox
+// @compatible      Chrome
+// @compatible      Opera
 // ==/UserScript==
 
 const namespace = "AWAKeyChecker:";
 const timeout = 5;
+const checkerStyleId = 'awa-key-checker-style';
+
+function findGiveawayHook() {
+  const node = document.querySelector('.row.accordion-section > .col')
+    || document.querySelector('.accordion-body.js-widget-steps')
+    || document.querySelector('.giveaway-redemption-steps')
+    || document.querySelector('.giveaway-instructions-title');
+
+  return node ? (node.closest('.col') || node.closest('.accordion-wrapper') || node.parentElement) : null;
+}
+
+function hasCountryKeys(countryData) {
+  if (!countryData || typeof countryData !== 'object') {
+    return false;
+  }
+  return Object.values(countryData).some((value) => Number(value) > 0);
+}
 
 // configuration callbacks
 function Callbacks() {
@@ -142,6 +161,12 @@ const gmc = new GM_config(
 
 // Key checker
 function check_keys(rgb_enabled) {
+  const checkerAccordionId = 'accordion-key-checker';
+  const checkerCollapseId = 'collapseKeyChecker';
+  if (document.getElementById(checkerAccordionId)) {
+    return;
+  }
+
   var country_with_keys = [];
   var country_without_keys = [];
   var countries = new function () {
@@ -1197,8 +1222,8 @@ function check_keys(rgb_enabled) {
 
   for (var country in countryKeys) {
     var get_country = countries.getEntry(country);
-    var get_country_name = get_country.name;
-    if (countryKeys[country].length === 0) {
+    var get_country_name = get_country ? get_country.name : country;
+    if (!hasCountryKeys(countryKeys[country])) {
       country_without_keys.push(" " + get_country_name);
     } else {
       country_with_keys.push(" " + get_country_name);
@@ -1214,51 +1239,68 @@ function check_keys(rgb_enabled) {
   }
 
   // Instructions article
-  const rightPanel = document.querySelector('article[class*="top-widget"][class*="instructions"] h1:first-of-type');
+  const rightPanel = findGiveawayHook();
+  if (!rightPanel) {
+    throw "AWAKeyChacker: Failed to locate giveaway panel";
+  }
 
   // Inject new CSS
-  const style = document.createElement("style");
+  let style = document.getElementById(checkerStyleId);
+  if (!style) {
+    style = document.createElement("style");
+    style.id = checkerStyleId;
+    document.head.append(style);
+  }
+
   style.innerText = `
+    .js-widget-check-accordion {
+      margin-bottom: 0.75rem;
+    }
+
     .js-widget-check {
-      margin-bottom: 2rem;
+      margin-bottom: 0.5rem;
+      padding: 0.75rem !important;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 0 0 10px 10px;
     }
 
     .js-widget-check > div h5.success {
-      color: green;
+      color: #59d17a;
       font-weight: bold;
       font-size: 1.15rem;
     }
     
     .js-widget-check > div h5.danger {
-      color: indianred;
+      color: #ff7c7c;
       font-weight: bold;
       font-size: 1.15rem;
     }
 
     .js-widget-check > div h5.warning {
-      color: goldenrod;
+      color: #ffca5f;
       font-weight: bold;
       font-size: 1.15rem;
     }
     
     .js-widget-check > div h5.info {
-      color: darkolivegreen;
+      color: #8fd4ff;
       font-weight: bold;
       font-size: 1.15rem;
     }
 
     .js-widget-check > div p {
-      padding-top: 5px;
-      color: #363636;
+      padding-top: 4px;
+      color: #d4dae3;
     }
 
     .js-widget-check > div ul {
-      color: #363636;
+      color: #d4dae3;
+      margin-bottom: 0.4rem;
     }
 
     .js-widget-check > div li {
       border: none !important;
-      padding: 5px 0;
+      padding: 2px 0;
     }
 
     .js-widget-check > div:has(img) {
@@ -1273,8 +1315,8 @@ function check_keys(rgb_enabled) {
     .js-widget-check > div hr {
       border: 0 !important;
       padding-bottom: 1.5px;
-      margin-bottom: 1.5rem;
-      background: hsla(0, 0%, 66%, 0.33);
+      margin: 0.75rem 0;
+      background: hsla(0, 0%, 80%, 0.28);
     }
   `;
 
@@ -1282,8 +1324,16 @@ function check_keys(rgb_enabled) {
   if (rgb_enabled) {
     style.innerText += `
       @keyframes animate {
+        0% {
+          background-position: 0% 50%;
+        }
+
+        50% {
+          background-position: 100% 50%;
+        }
+
         100% {
-          filter: hue-rotate(360deg);
+          background-position: 0% 50%;
         }
       }
 
@@ -1294,36 +1344,20 @@ function check_keys(rgb_enabled) {
       .js-widget-check {
         display: flex;
         align-content: center;
-        background:linear-gradient(135deg, rgba(20, 255, 233, .7), rgba(255, 235, 59, .7), rgba(255, 0, 224, .6), rgba(0, 255, 255, 1));
+        background: linear-gradient(135deg, rgba(20, 255, 233, 0.55), rgba(255, 235, 59, 0.45), rgba(255, 0, 224, 0.5), rgba(0, 255, 255, 0.55));
+        background-size: 300% 300%;
         border-radius: 10px;
-        animation: animate 2.3s linear infinite;
+        padding: 5px !important;
+        animation: animate 4s linear infinite;
       }
 
       .js-widget-check > div {
         width: 100%;
-        background: rgba(250, 250, 250, .7);
-        backdrop-filter: blur(50px);
-        border-radius: 6px;
-        padding: 5%;
-        margin: 1.5%;
-      }
-
-      .js-widget-check > div > h5.success {
-        background: green;
-        background-clip: text;
-        filter: grayscale(0.5) saturate(0.9) sepia(0.4) brightness(1.4) contrast(1.2);
-      }
-
-      .js-widget-check > div > h5.info {
-        background-clip: text;
-        filter: saturate(2) sepia(4.5) brightness(1.1) contrast(3.2);
-      }
-      
-      .js-widget-check > div > h5.danger {
-        background: deeppink;
-        color: deeppink;
-        background-clip: text;
-        filter: grayscale(0.8) brightness(1.2) saturate(0.8) contrast(0.9) invert(0.8);
+        background: rgba(22, 27, 34, 0.82);
+        backdrop-filter: blur(10px);
+        border-radius: 9px;
+        padding: 0.75rem;
+        margin: 0;
       }
 
       .js-widget-check > div hr {
@@ -1333,15 +1367,18 @@ function check_keys(rgb_enabled) {
     `
   }
   style.innerText = style.innerText.replace(/&lt;br&gt;/g, '').replace(/\s\s+/g, ' ').trim();
-  document.head.append(style);
-
-  // Create div
-  checkerWidget = document.createElement("div");
 
   // div innerHtml
-  checkerWidgetHtml = `
-    <div class="js-widget-check">
-    <div>
+  let checkerWidgetHtml = `
+    <div class="accordion-wrapper js-widget-check-accordion" id="${checkerAccordionId}">
+      <div class="accordion-header">
+        <button class="collapsed custom-accordion-btn" type="button" data-bs-toggle="collapse" data-bs-target="#${checkerCollapseId}" aria-expanded="false" aria-controls="${checkerCollapseId}">
+          <span>🔑 Key Availability</span>
+        </button>
+      </div>
+      <div id="${checkerCollapseId}" class="collapse" data-bs-parent="#${checkerAccordionId}">
+        <div class="accordion-body js-widget-check">
+          <div>
   `;
 
   // Availability
@@ -1378,14 +1415,17 @@ function check_keys(rgb_enabled) {
 
   // Quantity and requirements
   for (var country in countryKeys) {
-    if (countryKeys[country].length === 0) {
+    if (!hasCountryKeys(countryKeys[country])) {
       continue;
     }
-    for (var level in countryKeys[country]) {
+    const tierEntries = Object.entries(countryKeys[country]);
+    for (var i = 0; i < tierEntries.length; i++) {
+      const level = tierEntries[i][0];
+      const keyCount = tierEntries[i][1];
       checkerWidgetHtml += `
         <ul>
           <li>&emsp;🔸 Tier: ${level}</li>
-          <li>&emsp;🔸 Keys: ${countryKeys[country][level]}</li>
+          <li>&emsp;🔸 Keys: ${keyCount}</li>
         </ul>
       `;
     }
@@ -1409,10 +1449,10 @@ function check_keys(rgb_enabled) {
     }
   }
 
-  checkerWidget.innerHTML = checkerWidgetHtml + `<hr></div></div><br>`;
+  checkerWidgetHtml += `<hr></div></div></div></div>`;
 
   // Append the div
-  rightPanel.insertAdjacentHTML("beforebegin", checkerWidgetHtml);
+  rightPanel.insertAdjacentHTML("afterbegin", checkerWidgetHtml);
 }
 
 // Wait for variable
@@ -1438,15 +1478,19 @@ function wait_for_var(callback, interval = 5000) {
 }
 
 // Wait for element
-function wait_for_el(selector, callback, interval = 5000) {
+function wait_for_el(selectorOrResolver, callback, interval = 5000) {
   let i = 0;
   logger.clearAllExceptMine();
   logger.group(`${namespace} Gathering required elements`);
   const checkQuery = setInterval(() => {
     i++;
     logger.clearAllExceptMine();
-    logger.log("%s Attempt to find GA's scrollbar => %i", namespace, i);
-    if (document.querySelector(selector)) {
+    logger.log("%s Attempt to find giveaway panel => %i", namespace, i);
+    const foundElement = typeof selectorOrResolver === 'function'
+      ? selectorOrResolver()
+      : document.querySelector(selectorOrResolver);
+
+    if (foundElement) {
       clearInterval(checkQuery);
       logger.endGroup();
       callback();
@@ -1536,23 +1580,25 @@ const logger = (function () {
 window.logger = logger;
 
 // Run
-async function run() {
-  await onInit.add(() => {
+function run() {
+  onInit.add(() => {
     GM_registerMenuCommand('Settings', () => {
       gmc.open();
     });
-  });
 
-  const interval = gmc.get('interval');
-  try {
-    wait_for_var(() => {
-      wait_for_el('article[class*="top-widget"][class*="instructions"] h1:first-of-type', () => {
-        check_keys(gmc.get('rgb_enabled'));
-      }, interval)
-    }, interval);
-  }
-  catch {
-    throw "AWAKeyChacker: Unknown error";
-  }
+    const interval = Number(gmc.get('interval')) || 1000;
+    const rgbEnabled = Boolean(gmc.get('rgb_enabled'));
+
+    try {
+      wait_for_var(() => {
+        wait_for_el(findGiveawayHook, () => {
+          check_keys(rgbEnabled);
+        }, interval)
+      }, interval);
+    }
+    catch {
+      throw "AWAKeyChacker: Unknown error";
+    }
+  });
 }
 run();
