@@ -4,7 +4,7 @@ This userscript tell you the current amount of keys, level/tier requirements and
 It will work when you are on an Alienware Arena giveaway page. Also you can enable RGB feature in settings!
 
 ## How to use
-1. __Install__ a userscript manager extension (e.g. Tampermonkey, Violentmonkey, or Greasemonkey). _*Or literally any monkey that exists*_ :monkey:
+1. __Install__ a userscript manager extension (e.g. Tampermonkey, Violentmonkey). _*Or literally any monkey that exists*_ :monkey:
 2. __Open__ <a href="https://github.com/amoAR/AWA-Key-Checker/raw/main/AWACheck.user.js" target="_blank">This</a> link & click install! :tada:
 3. __Take a look__ at [Alienware](https://eu.alienwarearena.com/ucf/Giveaway) :sunglasses:
 
