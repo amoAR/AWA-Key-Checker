@@ -12,43 +12,11 @@ _Or literally any monkey that exists_ :smiley:
 ## Screenshots
 
 <table>
-    <thead>
-        <th>
-            <p>
-            <center>🌒 Dark mode</center>
-            </p>
-        </th>
-        <th>
-            <p>
-            <center>🔆 Light mode</center>
-            </p>
-        </th>
-    </thead>
     <tbody>
         <tr>
             <td>
                 <p>Default:</p>
-                <img width="100%" alt="widgets" src="Screenshots/dark.png">
-            </td>
-            <td>
-                <p>Default:</p>
-                <img width="100%" alt="widgets" src="Screenshots/light.png">
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <p>RGB:</p>
-                <img width="100%" alt="widgets" src="Screenshots/darkrgb.png">
-            </td>
-            <td>
-                <p>RGB:</p>
-                <img width="100%" alt="widgets" src="Screenshots/lightrgb.png">
-            </td>
-        </tr>
-        <tr>
-            <td colspan=2>
-                <p><pre align="center">No keys!</pre></p>
-                <img width="100%" alt="widgets" src="Screenshots/nokeys.png">
+                <img width="100%" alt="widgets" src="screenshot.png">
             </td>
         </tr>
     </tbody>
