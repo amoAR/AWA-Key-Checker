@@ -15,7 +15,7 @@ It will work when you are on an Alienware Arena giveaway page. Also you can enab
         <tr>
             <td>
                 <p>It will be placed under the GA:</p>
-                <img width="100%" alt="screenshot" src="screenshot.png">
+                <img width="100%" alt="screenshot" src="image.png">
             </td>
         </tr>
     </tbody>
