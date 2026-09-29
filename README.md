@@ -15,8 +15,8 @@ _Or literally any monkey that exists_ :smiley:
     <tbody>
         <tr>
             <td>
-                <p>Default:</p>
-                <img width="100%" alt="widgets" src="screenshot.png">
+                <p>It will be placed under the GA:</p>
+                <img width="100%" alt="screenshot" src="screenshot.png">
             </td>
         </tr>
     </tbody>
